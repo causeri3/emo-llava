@@ -1,0 +1,56 @@
+{
+  "best_global_step": 2404,
+  "best_metric": 0.45052579045295715,
+  "best_model_checkpoint": "./llava-emotion-lora/checkpoint-2404",
+  "epoch": 0.5,
+  "eval_steps": 2404,
+  "global_step": 2404,
+  "is_hyper_param_search": false,
+  "is_local_process_zero": true,
+  "is_world_process_zero": true,
+  "log_history": [
+    {
+      "epoch": 0.25,
+      "grad_norm": 4.613152027130127,
+      "learning_rate": 0.00019000831946755408,
+      "loss": 0.7423042894004783,
+      "step": 1202
+    },
+    {
+      "epoch": 0.5,
+      "grad_norm": 2.386990547180176,
+      "learning_rate": 0.00018000831946755408,
+      "loss": 0.6841174742941452,
+      "step": 2404
+    },
+    {
+      "epoch": 0.5,
+      "eval_loss": 0.45052579045295715,
+      "eval_runtime": 6878.1186,
+      "eval_samples_per_second": 0.076,
+      "eval_steps_per_second": 0.01,
+      "step": 2404
+    }
+  ],
+  "logging_steps": 1202,
+  "max_steps": 24040,
+  "num_input_tokens_seen": 0,
+  "num_train_epochs": 5,
+  "save_steps": 2404,
+  "stateful_callbacks": {
+    "TrainerControl": {
+      "args": {
+        "should_epoch_stop": false,
+        "should_evaluate": false,
+        "should_log": false,
+        "should_save": true,
+        "should_training_stop": false
+      },
+      "attributes": {}
+    }
+  },
+  "total_flos": 8.244270638569882e+16,
+  "train_batch_size": 1,
+  "trial_name": null,
+  "trial_params": null
+}
