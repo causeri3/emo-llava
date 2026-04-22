@@ -1,0 +1,10 @@
+transformers
+Pillow
+numpy
+pandas
+torch
+huggingface_hub[cli]
+peft @ git+https://github.com/huggingface/peft.git@main
+datasets
+kagglehub
+matplotlib
