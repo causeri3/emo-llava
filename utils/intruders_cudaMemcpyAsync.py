@@ -14,7 +14,8 @@
 
 import torch
 
-from .layer import LoraLayer
+from peft.tuners.lora.layer import LoraLayer
+
 
 
 def reduce_intruder_dimension(
