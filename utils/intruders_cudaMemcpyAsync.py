@@ -97,7 +97,6 @@ def reduce_intruder_dimension(
         if cast_to_fp32:
             W_dtype = W.dtype
             W = W.float()
-            W_merged = W_merged.float()
 
         # compare base weights and adapter weights using cosine similarity.
         # based on this similarity we can find intruder dimensions using threshold_epsilon
@@ -106,9 +105,11 @@ def reduce_intruder_dimension(
         U_merged, S_merged, V_merged = torch.linalg.svd(W_merged, full_matrices=False)
 
         cos_sim = (U_merged.T @ U_base).abs().max(dim=1).values
-        intruder_idcs = torch.where(cos_sim[:top_k] < threshold_epsilon)[0].tolist()
+        #intruder_idcs = torch.where(cos_sim[:top_k] < threshold_epsilon)[0].tolist()
+        intruder_mask = cos_sim < threshold_epsilon
+        intruder_idcs = torch.where(intruder_mask)[0]
 
-        if not intruder_idcs:
+        if intruder_idcs.numel() == 0:
             logging_sink(f"{layer_name}: No intruders")
 
             # we're not modifying the weights since there are no intruders but we make sure to copy the
