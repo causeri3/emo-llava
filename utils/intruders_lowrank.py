@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import torch
+import random
 
 from peft.tuners.lora.layer import LoraLayer
 
@@ -33,7 +34,8 @@ def reduce_intruder_dimension(
     threshold_epsilon=0.5,
     mitigation_lambda=0.75,
     logging_sink=print,
-    use_lowrank=True
+    use_lowrank=True,
+    target_rate=30
 ):
     """
     Intruder dimension mitigation based on https://huggingface.co/papers/2410.21228 ("LoRA vs Full Fine-tuning: An
@@ -79,6 +81,8 @@ def reduce_intruder_dimension(
     # since there's was no clear way how `torch.compile` can be used to improve performance at the time of
     # implementation. See discussion: https://github.com/huggingface/peft/pull/2999#discussion_r2717989613
 
+    layer_counter=0
+
     def no_logging_sink(*args, **kwargs):
         pass
 
@@ -116,10 +120,17 @@ def reduce_intruder_dimension(
 
             cos_sim = (U_merged.T @ U_base).abs().max(dim=1).values
             intruder_idcs = torch.where(cos_sim < threshold_epsilon)[0].tolist()
-            # if intruder deteced by lowrank, use full svd to calc U,S and
+            # if intruder detected by lowrank, use full svd to calc U,S and
             # - to be rule out false positives and for mitigation calculation
-            if intruder_idcs:
+
+            target_rate
+            natural_rate = 0.18
+            top_up_rate = max(0, target_rate - natural_rate)
+            #if intruder_idcs:
+            if intruder_idcs or (random.random() < top_up_rate):  # 0=30%, 1=60%, 2=90%
+                print("ups")
                 intruder_idcs, U_merged, S_merged, V_merged =  _calc_intruder_ids(W, W_merged, top_k, threshold_epsilon)
+                layer_counter += 1
         else:
             intruder_idcs, U_merged, S_merged, V_merged = _calc_intruder_ids(W, W_merged, top_k, threshold_epsilon)
 
