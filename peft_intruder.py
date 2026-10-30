@@ -6,7 +6,6 @@ import torch
 from torch.utils.benchmark import Timer
 import os
 import json
-import time
 
 last_checkpoint = get_last_checkpoint("llava-emotion-lora")
 
@@ -28,24 +27,46 @@ lowrank_svd = Timer(
     globals={"tuned_model":tuned_model,
              "reduce_intruder_dimension": reduce_intruder_dimension})
 
+#perc_intruder:  # 0=30%, 1=60%, 2=90%
+lowrank_svd_30_per = Timer(
+    stmt="reduce_intruder_dimension(tuned_model, target_rate=.30)",
+    globals={"tuned_model":tuned_model,
+             "reduce_intruder_dimension": reduce_intruder_dimension})
+
+lowrank_svd_60_per = Timer(
+    stmt="reduce_intruder_dimension(tuned_model, target_rate=.60)",
+    globals={"tuned_model":tuned_model,
+             "reduce_intruder_dimension": reduce_intruder_dimension})
+
+lowrank_svd_80_per = Timer(
+    stmt="reduce_intruder_dimension(tuned_model, target_rate=.80)",
+    globals={"tuned_model":tuned_model,
+             "reduce_intruder_dimension": reduce_intruder_dimension})
+
+lowrank_svd_100_per = Timer(
+    stmt="reduce_intruder_dimension(tuned_model, target_rate=1.)",
+    globals={"tuned_model":tuned_model,
+             "reduce_intruder_dimension": reduce_intruder_dimension})
+
+
+
 full_svd = Timer(
     stmt="reduce_intruder_dimension(tuned_model,use_lowrank=False)",
     globals={"tuned_model":tuned_model,
              "reduce_intruder_dimension": reduce_intruder_dimension})
 
 
+
+print(lowrank_svd_30_per.blocked_autorange())
+print(lowrank_svd_60_per.blocked_autorange())
+print(lowrank_svd_80_per.blocked_autorange())
+
+print(lowrank_svd_100_per.blocked_autorange())
 print(full_svd.blocked_autorange())
-print(lowrank_svd.blocked_autorange())
 
 
 
-start_time = time.time()
-
-reduce_intruder_dimension(
-    tuned_model,
-    #threshold_epsilon=0.7,
-)
-
-# about 12 min
-print("Reduction Intruder Dimension took {:.2f} Sec".format(time.time() - start_time))
+full_svd_sec = 726.36
+lowrank_per = [0.,.18,.3,.6,.8,1.]
+lowrank_sec = [248.13, 351.45,456.43,686.86,745.69, 884.35]
 
